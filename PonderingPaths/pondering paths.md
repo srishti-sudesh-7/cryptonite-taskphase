@@ -129,4 +129,47 @@ Here is your flag:
 pwn.college{Q_QABb8XIZgEWWngpIrT8eSy9N0.dBTN1QDLwIzN0czW}
 ````````
 
-##
+## Implicit Relative Path
+this one was just like the previous levels, except that I needed to tell the system explicitly that I need to execute the `run` program.   
+      
+once I entered the `/challenge` directory, I tried executing run, but it gave me an error. since the task mentioned using `.` for this, I tried using `./run` and it worked! this is because this is a relative path from `/challenge`.   
+`````
+hacker@paths~implicit-relative-path:~$ cd /
+hacker@paths~implicit-relative-path:/$ cd /challenge
+hacker@paths~implicit-relative-path:/challenge$ run
+ssh-entrypoint: run: command not found
+hacker@paths~implicit-relative-path:/challenge$ ./run
+Correct!!!
+./run is a relative path, invoked from the right directory!
+Here is your flag:
+pwn.college{4owl-Hkxs8YL9zFo2XrHDpvMMUj.dFTN1QDLwIzN0czW}
+hacker@paths~implicit-relative-path:/challenge$
+````````
+
+
+## Home Sweet Home
+
+_note: the ~ in the prompt suggests that you are in your home directory, where users usually store personal files. here the home directory is_ `/home/hacker`
+
+to get the flag, it is mentioned that I need to execute `/challenge/run` along with a suitable argument to get the flag. here is how I ensured my argument obeyed the given constraints.
+
+**constraint 1: argument must be an absolute path** - so I knew it needed to start be from the root /      
+**constraint 2: the path must be inside the home directory** - home direcotry is represented by ~, so I realised the root was inside ~ ie it the required argument begins with ~/         
+**constraint 3: your argument must be 3 characters or less** - I added the character s to my path and my final argument was `~/s`
+
+on using this argument with `/challenge/run`, I got the flag.
+
+````````
+hacker@paths~home-sweet-home:~$ cd /
+hacker@paths~home-sweet-home:/$ cd /challenge
+hacker@paths~home-sweet-home:/challenge$ /challenge/run
+You must provide an argument to /challenge/run when you invoke it!
+hacker@paths~home-sweet-home:~$ cd ~
+hacker@paths~home-sweet-home:~$ /challenge/run ~/s
+Writing the file to /home/hacker/s!
+... and reading it back to you:
+pwn.college{w-W9O_bHtzCCh8Dlxt1KFJTfEu8.dNzM4QDLwIzN0czW}
+````````
+
+
+
