@@ -344,3 +344,134 @@ hacker@commands~an-epic-filesystem-quest:/opt/linux/linux-5.4/drivers/iio/humidi
 
 
 ## Making Directories
+
+mkdir = command to make directory
+
+to make directory, first i changed the cwd to `/tmp`    
+then I used `mkdir` to create directory `pwn` in the cwd
+then I made a file called college using the `touch` command, after which I ran `/challenge/run` to get the flag
+````
+hacker@commands~making-directories:~$ cd /tmp
+hacker@commands~making-directories:/tmp$ mkdir pwn
+hacker@commands~making-directories:/tmp$ cd ./pwn
+hacker@commands~making-directories:/tmp/pwn$ touch college
+hacker@commands~making-directories:/tmp/pwn$ ls
+college
+hacker@commands~making-directories:/tmp/pwn$ /challenge/run
+Success! Here is your flag:
+pwn.college{oajCxbgQ-OXUEUjmh0rkrBiuMbG.dFzM4QDLwIzN0czW}
+````
+
+## Finding Files
+
+find = command to find files.    
+if search location isn't specified, it uses cwd.   
+if search criteria isn't specified, it matches all files.      
+to search by name, use `find -name insert_name `
+
+first I listed everything present in /.
+````
+hacker@commands~finding-files:~$ cd /
+hacker@commands~finding-files:/$ ls
+bin        dev   lib    libx32  nix   root  srv  usr
+boot       etc   lib32  media   opt   run   sys  var
+challenge  home  lib64  mnt     proc  sbin  tmp
+````
+I then went to the /challenge directory:
+
+````
+hacker@commands~finding-files:/tmp$ cd /challenge
+hacker@commands~finding-files:/challenge$ find flag
+find: ‘flag’: No such file or directory
+hacker@commands~finding-files:/challenge$ ls
+DESCRIPTION.md  run
+hacker@commands~finding-files:/challenge$ ./run
+The flag is hidden (and readable) somewhere on the filesystem. Go find it!
+````
+I used the `find` command while specifying the location to be `/` and the criteria to be `-name`
+````
+hacker@commands~finding-files:/$ find / -name flag
+find: ‘/root’: Permission denied
+find: ‘/proc/1/task/1/fd’: Permission denied
+find: ‘/proc/1/task/1/fdinfo’: Permission denied
+find: ‘/proc/1/task/1/ns’: Permission denied
+find: ‘/proc/1/fd’: Permission denied
+find: ‘/proc/1/map_files’: Permission denied
+find: ‘/proc/1/fdinfo’: Permission denied
+find: ‘/proc/1/ns’: Permission denied
+find: ‘/proc/7/task/7/fd’: Permission denied
+find: ‘/proc/7/task/7/fdinfo’: Permission denied
+find: ‘/proc/7/task/7/ns’: Permission denied
+find: ‘/proc/7/fd’: Permission denied
+find: ‘/proc/7/map_files’: Permission denied
+find: ‘/proc/7/fdinfo’: Permission denied
+find: ‘/proc/7/ns’: Permission denied
+find: ‘/var/log/private’: Permission denied
+find: ‘/var/log/apache2’: Permission denied
+find: ‘/var/log/mysql’: Permission denied
+find: ‘/var/cache/ldconfig’: Permission denied
+find: ‘/var/cache/apt/archives/partial’: Permission denied
+find: ‘/var/cache/private’: Permission denied
+find: ‘/var/lib/apt/lists/partial’: Permission denied
+find: ‘/var/lib/php/sessions’: Permission denied
+find: ‘/var/lib/mysql-files’: Permission denied
+find: ‘/var/lib/private’: Permission denied
+find: ‘/var/lib/mysql-keyring’: Permission denied
+find: ‘/var/lib/mysql’: Permission denied
+find: ‘/tmp/tmp.XvrUsDZh8M’: Permission denied
+find: ‘/run/mysqld’: Permission denied
+find: ‘/run/sudo’: Permission denied
+find: ‘/etc/ssl/private’: Permission denied
+/usr/local/lib/python3.8/dist-packages/pwnlib/flag
+/usr/local/share/radare2/5.9.5/flag
+/opt/linux/linux-5.4/arch/mips/include/asm/mach-jz4740/flag
+/opt/pwndbg/.venv/lib/python3.8/site-packages/pwnlib/flag
+/opt/radare2/libr/flag
+/nix/store/pmvk2bk4p550w182rjfm529kfqddnvh3-python3.11-pwntools-4.12.0/lib/python3.11/site-packages/pwnlib/flag
+/nix/store/1yagn5s8sf7kcs2hkccgf8d0wxlrv5sz-radare2-5.9.0/share/radare2/5.9.0/flag
+````
+
+from this long list, I had access to only 7 paths, so I used trial and error for each of them and eventually found the flag in `/opt/linux/linux-5.4/arch/mips/include/asm/mach-jz4740/flag`. 
+
+trial 1:
+````
+hacker@commands~finding-files:~$ cat /usr/local/lib/python3.8/dist-packages/pwnlib/flag
+cat: /usr/local/lib/python3.8/dist-packages/pwnlib/flag: Is a directory
+hacker@commands~finding-files:~$ ls /usr/local/lib/python3.8/dist-packages/pwnlib/flag
+__init__.py  __pycache__  flag.py
+````
+since the files are python files, I moved onto trial 2:
+````
+hacker@commands~finding-files:~$ cat /usr/local/share/radare2/5.9.5/flag
+cat: /usr/local/share/radare2/5.9.5/flag: Is a directory
+hacker@commands~finding-files:~$ ls /usr/local/share/radare2/5.9.5/flag
+tags.r2
+````
+since this does not match the flag, I went to trial 3:
+```
+hacker@commands~finding-files:~$ cat /opt/linux/linux-5.4/arch/mips/include/asm/mach-jz4740/flag
+pwn.college{YW0rP0FumONTa8FgVn2Dy5cEwtD.dJzM4QDLwIzN0czW}
+````
+
+## Linking Files
+ln -s = command and argument to create soft link.
+
+used https://youtu.be/4-vye3QFTFo?si=lzlYa6zYxpxzkf7B to learn about soft link and hard link on linux.    
+learnt that symlinks contain the file name, which the system reads and then gets data from the file whose name is in it. symlinks are meaningless if the original file is deleted.    
+on the other hand, hardlinks are alternate addresses to the same file contents, therefore deletion of original file will not affect the hardlink.      
+
+
+to do this task, I tried to symlink `/flag` to `/home/hacker/not-the-flag` but this was not working and it showed the error:        
+`ln: failed to create symbolic link '/home/hacker/not-the-flag': File exists`
+
+so the only way was to remove `/home/hacker/not-the-flag` and then try the linking, which worked.
+
+
+```
+hacker@commands~linking-files:~$ rm /home/hacker/not-the-flag
+hacker@commands~linking-files:~$ ln -s /flag /home/hacker/not-the-flag
+About to read out the /home/hacker/not-the-flag file!
+pwn.college{QQcEZ_winrmqArZ04SsVOF1epjC.dlTM1UDLwIzN0czW}
+hacker@commands~linking-files:~$
+```
+
