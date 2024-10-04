@@ -177,18 +177,251 @@ Correct usage! Your flag: pwn.college{UIqucUyM7sNx7Av5evukZl3PnEv.dVTM4QDLwIzN0c
 
 ## Searching For Manuals
 
+this challenge was incredibly time-consuming.    
+first, as instructed I entered `man man` to find:
 
 
+```
+hacker@man~searching-for-manuals:~$ man man
+MAN(1)                    Manual pager utils                    MAN(1)
 
+NAME
+       man - an interface to the system reference manuals
 
+SYNOPSIS
+       man [man options] [[section] page ...] ...
+       man -k [apropos options] regexp ...
+       man -K [man options] [section] term ...
+       man -f [whatis options] page ...
+       man -l [man options] file ...
+       man -w|-W [man options] page ...
 
+DESCRIPTION
+       man  is the system's manual pager.  Each page argument given to
+       man is normally the name of a  program,  utility  or  function.
+       The manual page associated with each of these arguments is then
+       found and displayed.  A section, if provided, will  direct  man
+       to look only in that section of the manual.  The default action
+       is to search in all of the available sections following a  pre-
+       defined  order  (see DEFAULTS), and to show only the first page
+       found, even if page exists in several sections.
+
+       The table below shows the section numbers of  the  manual  fol‐
+       lowed by the types of pages they contain.
+
+       1   Executable programs or shell commands
+       2   System calls (functions provided by the kernel)
+       3   Library calls (functions within program libraries)
+       4   Special files (usually found in /dev)
+       5   File formats and conventions, e.g. /etc/passwd
+       6   Games
+       7   Miscellaneous  (including  macro packages and conventions),
+--MORE--
+```
+
+I thought I needed to find where all the man pages are _stored_, so I searched for the same:
+
+```
 /stored
 ...skipping
        Manual pages are normally stored in nroff(1) format  under  a  directory
        such  as  /usr/share/man.  In some installations, there may also be pre‐
        formatted cat pages to improve performance.  See manpath(5) for  details
        of where these files are stored.
+```
+
+I was excited as I already got the path `/usr/share/man`. but I did not know how to use the man command to access this path, so I kept quickly went through the OPTIONS part of the manual and I found this:
+```
+   Finding manual pages
+       -L locale, --locale=locale
+              man  will normally determine your current locale by a call to the
+              C function setlocale(3) which  interrogates  various  environment
+              variables,  possibly including $LC_MESSAGES and $LANG.  To tempo‐
+              rarily override the determined value, use this option to supply a
+              locale string directly to man.  Note that it will not take effect
+              until the search for pages actually begins.  Output such  as  the
+              help message will always be displayed in the initially determined
+              locale.
+
+       -m system[,...], --systems=system[,...]
+              If this system has access  to  other  operating  system's  manual
+              pages,  they  can be accessed using this option.  To search for a
+              manual page from NewOS's manual page collection, use  the  option
+              -m NewOS.
+
+              The  system specified can be a combination of comma delimited op‐
+              erating system names.  To include a search of the native  operat‐
+              ing system's manual pages, include the system name man in the ar‐
+              gument string.  This option will override the $SYSTEM environment
+              variable.
+
+       -M path, --manpath=path
+              Specify  an  alternate manpath to use.  By default, man uses man‐
+              path derived code to determine the path to search.   This  option
+              overrides  the $MANPATH environment variable and causes option -m
+              to be ignored.
+
+              A path specified as a manpath must be the root of a  manual  page
+              hierarchy  structured  into  sections  as described in the man-db
+              manual (under "The manual page system").  To  view  manual  pages
+              outside such hierarchies, see the -l option.
+```
+so, I tried using the `-M path` option:
+```
+hacker@man~searching-for-manuals:/usr/share/man$ man -M  /usr/share/man
+What manual page do you want?
+For example, try 'man man'.
+hacker@man~searching-for-manuals:/usr/share/man$ man /challenge/challenge
+man: can't open /challenge/challenge: Permission denied
+```
+
+I was lost as to what to do here because I had hit a dead end.
+
+Since I had no other methods of trial, I went back and read the OPTIONS carefully, once again.     
+that's when I realised what I needed to do:
+```
+   Main modes of operation
+       -f, --whatis
+              Equivalent to whatis.  Display a short description  from
+              the  manual  page,  if available.  See whatis(1) for de‐
+              tails.
+
+       -k, --apropos
+              Equivalent to apropos.  Search the short manual page de‐
+              scriptions  for  keywords  and display any matches.  See
+              apropos(1) for details.
+
+       -K, --global-apropos
+              Search for text in all manual pages.  This is  a  brute-
+              force  search,  and  is likely to take some time; if you
+              can, you should specify a section to reduce  the  number
+              of  pages that need to be searched.  Search terms may be
+              simple strings (the default), or regular expressions  if
+              the --regex option is used.
+
+```
+it's mentioned that using `-k` helps to search manual pages based on keywords. I thought flag would be a good keyword to use so I tried that out:
+```
+hacker@man~searching-for-manuals:~$ man -k
+apropos what?
+hacker@man~searching-for-manuals:~$ man -k flag
+dpkg-buildflags (1)  - returns build flags to use during package build
+Dpkg::BuildFlags (3perl) - query build flags
+fegetexceptflag (3)  - floating-point rounding and exception handling
+fesetexceptflag (3)  - floating-point rounding and exception handling
+i386 (8)             - change reported architecture in new program en...
+ioctl_iflags (2)     - ioctl() operations for inode flags
+linux32 (1)          - change reported architecture in new program en...
+linux64 (1)          - change reported architecture in new program en...
+pcap-config (1)      - write libpcap compiler and linker flags to sta...
+security_compute_av_flags (3) - query the SELinux policy database in ...
+security_compute_av_flags_raw (3) - query the SELinux policy database...
+set_matchpathcon_flags (3) - set flags controlling the operation of m...
+set_matchpathcon_invalidcon (3) - set flags controlling the operation...
+set_matchpathcon_printf (3) - set flags controlling the operation of ...
+setarch (1)          - change reported architecture in new program en...
+setarch (8)          - change reported architecture in new program en...
+wyriutgcox (1)       - print the flag!
+x86_64 (8)           - change reported architecture in new program en...
+
+````
+I finally found the man page with "print the flag!" all i had to do was use the `man` command with it as the argument:
+```
+hacker@man~searching-for-manuals:~$ man wyriutgcox
+
+CHALLENGE(1)              Challenge Commands              CHALLENGE(1)
+
+NAME
+       /challenge/challenge - print the flag!
+
+SYNOPSIS
+       challenge OPTION
+
+DESCRIPTION
+       Output the flag when called with the right arguments.
+
+       --fortune
+              read a fortune
+
+       --version
+              output version information and exit
+
+       --wyriut NUM
+              print the flag if NUM is 479
+
+AUTHOR
+       Written by Zardus.
+
+REPORTING BUGS
+       The   repository  for  this  dojo:  <https://github.com/pwncol‐
+       lege/linux-luminarium/>
+
+SEE ALSO
+       man(1) bash-builtins(7)
+
+pwn.college                    May 2024                   CHALLENGE(1)
+```
+
+now it resembled the previosu task, except I replaced NUM with 479 this time.
+```
+hacker@man~searching-for-manuals:~$ /challenge/challenge --wyriut 479
+Correct usage! Your flag: pwn.college{wyriEutgcoRZESZ4xhiXcrE7uW9.dZTM4QDLwIzN0czW}
+```
+
+## Helpful Programs
+
+-h or --help or -? = arguments that give info about how to run the particular command
+
+since so far, all the flags were invoked using the `/challenge/challenge` command, I decided I'd use it along with `--help`. this is what I got:
+```
+hacker@man~helpful-programs:/challenge$ /challenge/challenge -h
+usage: a challenge to make you ask for help [-h] [--fortune] [-v]
+                                            [-g GIVE_THE_FLAG] [-p]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --fortune             read your fortune
+  -v, --version         get the version number
+  -g GIVE_THE_FLAG, --give-the-flag GIVE_THE_FLAG
+                        get the flag, if given the correct value
+  -p, --print-value     print the value that will cause the -g option to
+                        give you the flag
+```
+from here it was clear that I had to use the `-p` argument followed by the `-g GIVE_THE_FLAG` argument:
+```
+hacker@man~helpful-programs:/challenge$ /challenge/challenge -p
+The secret value is: 69
+hacker@man~helpful-programs:/challenge$ /challenge/challenge -g 69
+Correct usage! Your flag: pwn.college{0Ej6j9cyft8lax5k04IZmZ2rJhG.ddjM4QDLwIzN0czW}
+```
 
 
-       
+## Help For Builtins
 
+builtins are commands that are built into the shell itself.     
+
+help = builtin that shows list of shell builtins       
+
+to do this challenge, I started off by using `help challenge` as given in the description.
+
+```
+hacker@man~help-for-builtins:~$ help challenge
+challenge: challenge [--fortune] [--version] [--secret SECRET]
+    This builtin command will read you the flag, given the right arguments!
+
+    Options:
+      --fortune         display a fortune
+      --version         display the version
+      --secret VALUE    prints the flag, if VALUE is correct
+
+    You must be sure to provide the right value to --secret. That value
+    is "4nmMlKGQ".
+```
+
+the answer was pretty direct, I replaced VALUE with 4nmMlKGQ and passed the right argument:
+
+````
+hacker@man~help-for-builtins:~$  challenge --secret 4nmMlKGQ
+Correct! Here is your flag!
+pwn.college{4nmMlKGQPLiQktKsIFp-uuS1TIw.dRTM5QDLwIzN0czW}
+````
