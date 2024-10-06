@@ -470,6 +470,7 @@ so the only way was to remove `/home/hacker/not-the-flag` and then try the linki
 ```
 hacker@commands~linking-files:~$ rm /home/hacker/not-the-flag
 hacker@commands~linking-files:~$ ln -s /flag /home/hacker/not-the-flag
+hacker@commands~linking-files:~$ /challenge/catflag
 About to read out the /home/hacker/not-the-flag file!
 pwn.college{QQcEZ_winrmqArZ04SsVOF1epjC.dlTM1UDLwIzN0czW}
 hacker@commands~linking-files:~$
