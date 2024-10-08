@@ -115,7 +115,7 @@ mode!
 ## Redirecting Errors
 
 File Descriptor (FD) number is basically a number assigned to each type of channel, through which the user can specify which channel of communication is to be used.   
-> is equivalent to 1 > (stdout)
+simply using > is equivalent to 1 > (stdout)     
 note: 0=stdin, 1=stdout, 2=stderr
 
 here all I had to do was redirect the flag from `/challenge/run` to `myflag` and its errors to `instructions`
@@ -304,7 +304,7 @@ but this was not working.
 I realised that I couldn't use the FD 2 along with the tee command in this manner and process substitiution can't occur.    
 
 I tried a few more methods but they didn't work. eventually I realised why: it's because I kept using 2 pipes.   
-it also didn't make sense to use two pipes, since the input for `/challenge/the` and `/challenge/planet` is not the same.
+it didn't make sense to use two pipes, since the input for `/challenge/the` and `/challenge/planet` is not the same.
 
 so first, I redirected the stderr using > and then used a pipe, followed by `tee` for which it finally worked:
 
