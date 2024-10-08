@@ -279,4 +279,23 @@ hacker@piping~duplicating-piped-data-with-tee:~$
 
 ## Writing to Multiple Programs
 
+process substitution is a method used to transfer the output of one command to the input of multiple other commands.   
+it basically treats the output of any command as a file, which is given a file name aka a named pipe.      
+
+I used https://sysxplore.com/process-substitution-in-bash/ to understand this concept better.
+
+to do this challenge, I needed to split the output of `/challenge/hack` to both `/challenge/tee` and `/challenge/planet`. therefore, `tee` is required in between the two pipes, to create the splitting.
+
+with the `tee` command, I used the `>(/challenge/the)` to take the output of the initial program and use it as the stdin here.
+
+```
+hacker@piping~writing-to-multiple-programs:~$ /challenge/hack |tee >(/challenge/the) | /challenge/planet
+Congratulations, you have duplicated data into the input of two programs! Here
+is your flag:
+pwn.college{42wSUaKsH91Wm6g89LQCpWvU9q4.dBDO0UDLwIzN0czW}
+```
+
+## Split Piping stderr and stdout
+
+
 
