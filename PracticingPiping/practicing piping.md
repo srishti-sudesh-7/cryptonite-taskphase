@@ -243,10 +243,6 @@ pwns
 ## Duplicating Piped Data with Tee
 tee = command to duplicate the data that's being piped.
 
-
-
-
-
 at first, I was confused on how to use the `tee` command but the second example in the website helped me realise that I needed to make a temporary file `pwn_op` to debug it:
 
 ```
@@ -280,7 +276,8 @@ hacker@piping~duplicating-piped-data-with-tee:~$
 ## Writing to Multiple Programs
 
 process substitution is a method used to transfer the output of one command to the input of multiple other commands.   
-it basically treats the output of any command as a file, which is given a file name aka a named pipe.      
+it basically treats the output of any command as a file, which is given a file name aka a named pipe.    
+the >() operator signified proces substitution ie anything inside it is treated like a file.
 
 I used https://sysxplore.com/process-substitution-in-bash/ to understand this concept better.
 
@@ -297,5 +294,28 @@ pwn.college{42wSUaKsH91Wm6g89LQCpWvU9q4.dBDO0UDLwIzN0czW}
 
 ## Split Piping stderr and stdout
 
+this task was pretty hard and took a lot of trial and error:
 
+my first try was this:
+```
+hacker@piping~split-piping-stderr-and-stdout:~$ /challenge/hack | tee 2>(/challenge/the) | /challenge/planet
+```
+but this was not working.      
+I realised that I couldn't use the FD 2 along with the tee command in this manner and process substitiution can't occur.    
+
+I tried a few more methods but they didn't work. eventually I realised why: it's because I kept using 2 pipes.   
+it also didn't make sense to use two pipes, since the input for `/challenge/the` and `/challenge/planet` is not the same.
+
+so first, I redirected the stderr using > and then used a pipe, followed by `tee` for which it finally worked:
+
+```
+hacker@piping~split-piping-stderr-and-stdout:~$ /challenge/
+hack 2> >(/challenge/the) | tee >(/challenge/planet)
+This secret data must directly make it to /challenge/planet over my stdout.
+Don't try to copy-paste it; it changes too fast.
+6681625630145341
+Congratulations, you have learned a redirection technique that even experts
+struggle with! Here is your flag:
+pwn.college{g-OucMoJ4TTtXA1p1R4Hu1V70Rd.dFDNwYDLwIzN0czW}
+```
 
