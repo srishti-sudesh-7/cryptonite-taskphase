@@ -130,7 +130,7 @@ hacker@piping~redirecting-errors:~$ cat myflag
 
 < is used to redirect input to a program
 
-
+this one was simple, the instructions said PWN would have to containt COLLEGE and then /chalenge/run would have to be redirected to PWN, as shown below: 
 
 ```
 hacker@piping~redirecting-input:~$ echo COLLEGE > PWN
