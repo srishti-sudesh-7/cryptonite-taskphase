@@ -41,7 +41,7 @@ hacker@piping~redirecting-more-output:~$ cat myflag
 ````
 
 ## Appending Output
->> = attaches the output of a command to the file (used when we need to attach outputs of multiple commands)
+this >> attaches the output of a command to the file (used when we need to attach outputs of multiple commands)
 
 I started by redirect output of `/challenge/run` to the file mentioned in the instructions.
 ```
