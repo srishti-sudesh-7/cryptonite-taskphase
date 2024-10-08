@@ -1,7 +1,7 @@
 # Practicing Piping
 
 ## Redirecting Output
-> = used to redirect output of a command to another file
+the > is used to redirect output of a command to another file
 
 here I redirected the output of `echo PWN` to a file named `COLLEGE`.
 
