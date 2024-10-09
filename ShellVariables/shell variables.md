@@ -34,7 +34,7 @@ pwn.college{ctw2pRHgGP0Z3ckYAsIE66-POjT.dBjN1QDLwIzN0czW}
 ## Exporting Variables
 exporting is a process by which we allow other commands/programs to use the variable.
 
-as instrcuted, I first exported var PWN whose vallue is college:
+as instructed, I first exported var PWN whose vallue is college:
 ```
 hacker@variables~exporting-variables:~$ export PWN=COLLEGE
 You've set the PWN variable to the proper value!
@@ -96,4 +96,26 @@ hacker@variables~storing-command-output:~$ echo $PW
 N
 pwn.college{kGvge7Iv2dnMd-gRts8tIF5Ckbr.dVzN0UDLwIzN0czW}
 
+```
+
+## Reading Input
+read = command used to read user's input (using it with -p argument lets you specify a prompt too)     
+to do this challenge, I made the shell read the input of the user and store it in variable PWN, as shown below:
+```
+hacker@variables~reading-input:~$ read -p "enter value of var PWN: " PWN
+enter value of var PWN: COLLEGE
+You've set the PWN variable properly! As promised, here is the flag:
+pwn.college{kz-4kvs4xEyX6gNo9EBGuBbR7H_.dhzN1QDLwIzN0czW}
+```
+
+## Reading Files
+here I learnt how to use the `read` command to read files.    
+this is done by redirecting the target file to the input variable of the `read` command
+
+here, I redirected the file `/challenge/read_me` to `read PWN` and got the flag.
+
+```
+hacker@variables~reading-files:~$ read PWN < /challenge/read_me
+You've set the PWN variable properly! As promised, here is the flag:
+pwn.college{k1HtABPrSJU-LsbGNdcp0KnaV17.dBjM4QDLwIzN0czW}
 ```
