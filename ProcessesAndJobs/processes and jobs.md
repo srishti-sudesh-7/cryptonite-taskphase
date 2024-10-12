@@ -136,7 +136,7 @@ notes:
   - T = suspended
   - S = sleeping 
   - R = actively running
-  - + = in foreground
+  - plus (+) = in foreground
 
 to do this, the logic i followed was: run `/challenge/run` > suspend it > resume it in background > run it again.
 ```
@@ -215,4 +215,35 @@ pwn.college{kE3R8cb3GNxGZ7mw5gVWu__A_SO.dhDN4QDLwIzN0czW}
 
 to start a process in the background itself, just attach a & at the end.
 
+I did the same to run `/challenge/run` in the background:
+```
+hacker@processes~starting-backgrounded-processes:~$ /challenge/run &
+[1] 82
+
+Yay, you started me in the background! Because of that, this text will probably
+overlap weirdly with the shell prompt, but you're used to that by now...
+
+Anyways! Here is your flag!
+pwn.college{kPcRz6_JmGjYYq-pTe9_NELqc0Q.dlDN4QDLwIzN0czW}
+[1]+  Done                    /challenge/run
+```
+
+## Process Exit Codes
+
+every process has it's own exit code when it terminates and it can be seen using `$?`     
+commands that succeed return 0 whereas others return a non-zero value     
+
+first I ran `/challenge/get-code` and then used `$?` to get its code.
+```
+hacker@processes~process-exit-codes:~$ /challenge/get-code
+Exiting with an error code!
+hacker@processes~process-exit-codes:~$ $?
+ssh-entrypoint: 36: command not found
+```
+after this, I used 36 as an argument with `/challenge/submit-code`
+```
+hacker@processes~process-exit-codes:~$ /challenge/submit-code 36
+CORRECT! Here is your flag:
+pwn.college{Uikr3_ugQIWBe1hyTt90GNyBqBF.dljN4UDLwIzN0czW}
+```
 
