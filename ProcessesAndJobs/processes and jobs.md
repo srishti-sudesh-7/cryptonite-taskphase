@@ -110,3 +110,109 @@ root          91      89  0 15:50 pts/0    00:00:00 ps -f
 Yay, I found another version of me! Here is the flag:
 pwn.college{cPi3StqzdZwZair-itj3spT0rs4.dVDN4QDLwIzN0czW}
 ```
+
+## Resuming Processes
+fg = command to resume a suspended process and bring it to the foreground of the shell
+
+I first ran `/challenge/run` which then gave me the exact steps to follow to get the flag:
+```
+hacker@processes~resuming-processes:~$ /challenge/run
+Let's practice resuming processes! Suspend me with Ctrl-Z, then resume me with
+the 'fg' command! Or just press Enter to quit me!
+^Z
+[1]+  Stopped                 /challenge/run
+hacker@processes~resuming-processes:~$ fg
+/challenge/run
+I'm back! Here's your flag:
+pwn.college{0z2tSqJqlDvRPtueOVKxQCky0Hb.dZDN4QDLwIzN0czW}
+```
+
+## Backgrounding Processes
+bg = command to resume processes but in the background, ie the terminal can still take more commands while the program runs in the back     
+
+notes:     
+- ps -o command invokes STAT column
+- in STAT column:
+  - T = suspended
+  - S = sleeping 
+  - R = actively running
+  - + = in foreground
+
+to do this, the logic i followed was: run `/challenge/run` > suspend it > resume it in background > run it again.
+```
+hacker@processes~backgrounding-processes:~$ /challenge/run
+I'll only give you the flag if there's already another copy of me running *and
+not suspended* in this terminal... Let's check!
+
+UID          PID STAT CMD
+root          82 S+   bash /challenge/run
+root          84 R+   ps -o user=UID,pid,stat,cmd
+
+I don't see a second me!
+
+To pass this level, you need to suspend me, resume the suspended process in the
+background, and then launch a new version of me! You can background me with
+Ctrl-Z (and resume me in the background with 'bg') or, if you're not ready to
+do that for whatever reason, just hit Enter and I'll exit!
+^Z
+[1]+  Stopped                 /challenge/run
+hacker@processes~backgrounding-processes:~$ bg
+[1]+ /challenge/run &
+
+Yay, I'm now running the background! Because of that, this text will probably
+overlap weirdly with the shell prompt. Don't panic; just hit Enter a few times
+to scroll this text out.
+hacker@processes~backgrounding-processes:~$ /challenge/run
+I'll only give you the flag if there's already another copy of me running *and
+not suspended* in this terminal... Let's check!
+
+UID          PID STAT CMD
+root          82 S    bash /challenge/run
+root          92 S    sleep 6h
+root          93 S+   bash /challenge/run
+root          95 R+   ps -o user=UID,pid,stat,cmd
+
+Yay, I found another version of me running in the background! Here is the flag:
+pwn.college{04QvTiajMnbK1Tdro-Y6EhZSC7s.ddDN4QDLwIzN0czW}
+```
+
+## Foregrounding Processes
+fg command can also bring a background process to the foreground    
+
+since this challenge didnt elaborate on any instructions, I ran `/challenge/run` as done in most previous tasks. this is the message I got:
+```
+hacker@processes~foregrounding-processes:~$ /challenge/run
+To pass this level, you need to suspend me, resume the suspended process in the
+background, and *then* foreground it without re-suspending it! You can
+background me with Ctrl-Z (and resume me in the background with 'bg') or, if
+you're not ready to do that for whatever reason, just hit Enter and I'll exit!
+^Z
+```
+I followed the instructions and suspended the process first:
+```
+[1]+  Stopped                 /challenge/run
+```
+then I resumed it in the backrground:
+```
+hacker@processes~foregrounding-processes:~$ bg
+[1]+ /challenge/run &
+
+Yay, I'm now running the background! Because of that, this text will probably
+overlap weirdly with the shell prompt. Don't panic; just hit Enter a few times
+to scroll this text out. After that, resume me into the foreground with 'fg';
+I'll wait.
+```
+on running it in the foreground, I got the flag:
+```
+hacker@processes~foregrounding-processes:~$ fg
+/challenge/run
+YES! Great job! I'm now running in the foreground. Hit Enter for your flag!
+
+pwn.college{kE3R8cb3GNxGZ7mw5gVWu__A_SO.dhDN4QDLwIzN0czW}
+```
+
+## Starting Backgrounded Processes
+
+to start a process in the background itself, just attach a & at the end.
+
+
