@@ -3,7 +3,7 @@ globbing is a method to refer to files without typing their whole path
 
 ## Matching with *
 
-* = used to match already existing filenames (will match anything except / or leading .)
+asterisk * = used to match already existing filenames (will match anything except / or leading .)
 
 this one was direct. I used the exact syntax given in the instructions to find `/challenge` and then used the same argument `/c*` while I used the command `cd`.
 
