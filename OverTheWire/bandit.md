@@ -449,3 +449,210 @@ The password is 7x16WNeHIi5YkIhWsfFIqoognUTyj9Q4
 ```
 
 ## LEVEL 12 TO LEVEL 13
+learnt about the use of the following commands:     
+1. mktemp -d creates a temporary file/directory
+2. mv is used to move or rename files
+3. cp is used to copy files
+4. xxd is used to make the hexdump of a file
+5. tar, bunzip2, bzip2, gunzip, gzip are all for compression and decompression 
+
+first I created a temporary directory, copied data.txt to it and then renamed it:
+```
+bandit12@bandit:/tmp$ mktemp -d
+/tmp/tmp.HwvgdJGsoS
+bandit12@bandit:/tmp$ cp data.txt /tmp/tmp.HwvgdJGsoS
+bandit12@bandit:/tmp$ cd /tmp/tmp.HwvgdJGsoS
+bandit12@bandit:/tmp/tmp.HwvgdJGsoS$ ls
+data.txt
+bandit12@bandit:/tmp/tmp.HwvgdJGsoS$ mv data.txt passwordinhere.txt
+bandit12@bandit:/tmp/tmp.HwvgdJGsoS$ ls
+passwordinhere.txt
+```
+on using file command, it said the file contained ASCII text, so I had to revert the hexdump to binary text first. resource: https://www.baeldung.com/linux/create-hex-dump
+```
+bandit12@bandit:/tmp/tmp.HwvgdJGsoS$ file passwordinhere.txt
+passwordinhere.txt: ASCII text
+bandit12@bandit:/tmp/tmp.HwvgdJGsoS$ xxd -r passwordinhere.txt > hex
+bandit12@bandit:/tmp/tmp.HwvgdJGsoS$ file hex
+hex: gzip compressed data, was "data2.bin", last modified: Thu Sep 19 07:08:15 2024, max compression, from Unix, original size modulo 2^32 574
+```
+now I had to start decompressing     
+resources:        
+https://www.linuxjournal.com/content/linux-file-compression-gzip-bzip2-and-xz-unveiled      
+https://www.cyberciti.biz/faq/tar-extract-linux/
+
+here, I had to repeatedly decompress files based on how they were compressed. 
+- bzip2 compressed -> mv to .bz2 file -> bunzip command
+- gzip compressed -> mv to .gz file -> gunzip command
+- POSIX tar archive -> mv to .tar file -> tar -xvf command
+
+
+```
+bandit12@bandit:/tmp/tmp.HwvgdJGsoS$ mv hex hexx.gz
+bandit12@bandit:/tmp/tmp.HwvgdJGsoS$ ls
+hex.bin  hexx.gz  passwordinhere.txt
+bandit12@bandit:/tmp/tmp.HwvgdJGsoS$ gunzip hexx.gz
+bandit12@bandit:/tmp/tmp.HwvgdJGsoS$ file hexx
+hexx: bzip2 compressed data, block size = 900k
+bandit12@bandit:/tmp/tmp.HwvgdJGsoS$ mv hexx file.bz2
+bandit12@bandit:/tmp/tmp.HwvgdJGsoS$ bunzip2 file.bz2
+bandit12@bandit:/tmp/tmp.HwvgdJGsoS$ ls
+file  hex.bin  passwordinhere.txt
+bandit12@bandit:/tmp/tmp.HwvgdJGsoS$ file file
+file: gzip compressed data, was "data4.bin", last modified: Thu Sep 19 07:08:15 2024, max compression, from Unix, original size modulo 2^32 20480
+bandit12@bandit:/tmp/tmp.HwvgdJGsoS$ mv file file1.gz
+bandit12@bandit:/tmp/tmp.HwvgdJGsoS$ gunzip file1.gz
+bandit12@bandit:/tmp/tmp.HwvgdJGsoS$ file file1
+file1: POSIX tar archive (GNU)
+bandit12@bandit:/tmp/tmp.HwvgdJGsoS$ mv file1 file2.tar
+bandit12@bandit:/tmp/tmp.HwvgdJGsoS$ tar -xvf file2
+bandit12@bandit:/tmp/tmp.HwvgdJGsoS$ tar -xvf file2.tar
+data5.bin
+bandit12@bandit:/tmp/tmp.HwvgdJGsoS$ file data5.bin
+data5.bin: POSIX tar archive (GNU)
+bandit12@bandit:/tmp/tmp.HwvgdJGsoS$ ls
+data5.bin  file2.tar  hex.bin  passwordinhere.txt
+bandit12@bandit:/tmp/tmp.HwvgdJGsoS$ mv data.bin file3.tar
+mv: cannot stat 'data.bin': No such file or directory
+bandit12@bandit:/tmp/tmp.HwvgdJGsoS$ mv data5.bin file3.tar
+bandit12@bandit:/tmp/tmp.HwvgdJGsoS$ tar -xvf file3.tar
+data6.bin
+bandit12@bandit:/tmp/tmp.HwvgdJGsoS$ file data6.bin
+data6.bin: bzip2 compressed data, block size = 900k
+bandit12@bandit:/tmp/tmp.HwvgdJGsoS$ mv data6.bin file4.bz2
+bandit12@bandit:/tmp/tmp.HwvgdJGsoS$ bunzip2 file4.bz2
+bandit12@bandit:/tmp/tmp.HwvgdJGsoS$ file file4
+file4: POSIX tar archive (GNU)
+bandit12@bandit:/tmp/tmp.HwvgdJGsoS$ mv file4 file5.tar
+bandit12@bandit:/tmp/tmp.HwvgdJGsoS$ tar -xvf file5.tar
+data8.bin
+bandit12@bandit:/tmp/tmp.HwvgdJGsoS$ file data8.bin
+data8.bin: gzip compressed data, was "data9.bin", last modified: Thu Sep 19 07:08:15 2024, max compression, from Unix, original size modulo 2^32 49
+bandit12@bandit:/tmp/tmp.HwvgdJGsoS$ mv data8.bin file6.gz
+bandit12@bandit:/tmp/tmp.HwvgdJGsoS$ gunzip file6.gz
+bandit12@bandit:/tmp/tmp.HwvgdJGsoS$ file file6
+file6: ASCII text
+bandit12@bandit:/tmp/tmp.HwvgdJGsoS$ cat file6
+The password is FO5dwFsc0cbaIiH0h8J2eUks2vdTDwAn
+```
+
+## LEVEL 13 TO LEVEL 14    
+
+links:       
+https://askubuntu.com/questions/817626/whats-the-meaning-of-i-in-ssh       
+
+first I listed the contents of ~ and found the file in which private key was stored. 
+```
+bandit13@bandit:~$ ls
+sshkey.private
+```
+now I had to use ssh command with -i option as sshkey.private is the identity file
+```
+bandit13@bandit:~$ ssh -i sshkey.private bandit14@localhost -p 2220
+The authenticity of host '[localhost]:2220 ([127.0.0.1]:2220)' can't be established.
+ED25519 key fingerprint is SHA256:C2ihUBV7ihnV1wUXRb4RrEcLfXC5CXlhmAAM/urerLY.
+This key is not known by any other names.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+Could not create directory '/home/bandit13/.ssh' (Permission denied).
+Failed to add the host to the list of known hosts (/home/bandit13/.ssh/known_hosts).
+                         _                     _ _ _
+                        | |__   __ _ _ __   __| (_) |_
+                        | '_ \ / _` | '_ \ / _` | | __|
+                        | |_) | (_| | | | | (_| | | |_
+                        |_.__/ \__,_|_| |_|\__,_|_|\__|
+
+
+                      This is an OverTheWire game server.
+            More information on http://www.overthewire.org/wargames
+
+!!! You are trying to log into this SSH server with a password on port 2220 from localhost.
+!!! Connecting from localhost is blocked to conserve resources.
+!!! Please log out and log in again.
+
+
+      ,----..            ,----,          .---.
+     /   /   \         ,/   .`|         /. ./|
+    /   .     :      ,`   .'  :     .--'.  ' ;
+   .   /   ;.  \   ;    ;     /    /__./ \ : |
+  .   ;   /  ` ; .'___,/    ,' .--'.  '   \' .
+  ;   |  ; \ ; | |    :     | /___/ \ |    ' '
+  |   :  | ; | ' ;    |.';  ; ;   \  \;      :
+  .   |  ' ' ' : `----'  |  |  \   ;  `      |
+  '   ;  \; /  |     '   :  ;   .   \    .\  ;
+   \   \  ',  /      |   |  '    \   \   ' \ |
+    ;   :    /       '   :  |     :   '  |--"
+     \   \ .'        ;   |.'       \   \ ;
+  www. `---` ver     '---' he       '---" ire.org
+
+
+Welcome to OverTheWire!
+
+If you find any problems, please report them to the #wargames channel on
+discord or IRC.
+
+--[ Playing the games ]--
+
+  This machine might hold several wargames.
+  If you are playing "somegame", then:
+
+    * USERNAMES are somegame0, somegame1, ...
+    * Most LEVELS are stored in /somegame/.
+    * PASSWORDS for each level are stored in /etc/somegame_pass/.
+
+  Write-access to homedirectories is disabled. It is advised to create a
+  working directory with a hard-to-guess name in /tmp/.  You can use the
+  command "mktemp -d" in order to generate a random and hard to guess
+  directory in /tmp/.  Read-access to both /tmp/ is disabled and to /proc
+  restricted so that users cannot snoop on eachother. Files and directories
+  with easily guessable or short names will be periodically deleted! The /tmp
+  directory is regularly wiped.
+  Please play nice:
+
+    * don't leave orphan processes running
+    * don't leave exploit-files laying around
+    * don't annoy other players
+    * don't post passwords or spoilers
+    * again, DONT POST SPOILERS!
+      This includes writeups of your solution on your blog or website!
+
+--[ Tips ]--
+
+  This machine has a 64bit processor and many security-features enabled
+  by default, although ASLR has been switched off.  The following
+  compiler flags might be interesting:
+
+    -m32                    compile for 32bit
+    -fno-stack-protector    disable ProPolice
+    -Wl,-z,norelro          disable relro
+
+  In addition, the execstack tool can be used to flag the stack as
+  executable on ELF binaries.
+
+  Finally, network-access is limited for most levels by a local
+  firewall.
+
+--[ Tools ]--
+
+ For your convenience we have installed a few useful tools which you can find
+ in the following locations:
+
+    * gef (https://github.com/hugsy/gef) in /opt/gef/
+    * pwndbg (https://github.com/pwndbg/pwndbg) in /opt/pwndbg/
+    * gdbinit (https://github.com/gdbinit/Gdbinit) in /opt/gdbinit/
+    * pwntools (https://github.com/Gallopsled/pwntools)
+    * radare2 (http://www.radare.org/)
+
+--[ More information ]--
+
+  For more information regarding individual wargames, visit
+  http://www.overthewire.org/wargames/
+
+  For support, questions or comments, contact us on discord or IRC.
+
+  Enjoy your stay!
+
+bandit14@bandit:~$ cat /etc/bandit_pass/bandit14
+MU4VWeTyJk8ROof1qqmcBPaLh7lDCPvS
+```
+
+## LEVEL 14 TO LEVEL 15
