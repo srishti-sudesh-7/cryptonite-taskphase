@@ -655,4 +655,13 @@ bandit14@bandit:~$ cat /etc/bandit_pass/bandit14
 MU4VWeTyJk8ROof1qqmcBPaLh7lDCPvS
 ```
 
-## LEVEL 14 TO LEVEL 15
+## LEVEL 14 TO LEVEL 15    
+learnt about netcat (nc) command using https://www.serverwala.com/blog/netcat-command-in-linux/     
+used this command to submit the required password to the specified port on localhost
+```
+bandit14@bandit:~$ nc localhost 30000 < /etc/bandit_pass/bandit14
+Correct!
+8xCjnmgoKbGLhHFAZlGE5Tmu4M2tKJQo
+```
+
+## LEVEL 15 TO LEVEL 16 
