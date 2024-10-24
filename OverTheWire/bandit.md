@@ -222,7 +222,7 @@ bandit1@bandit:~$ cat < -
 ## LEVEL 2 TO LEVEL 3
 used this password to log into user bandit2 using ssh.    
 learnt that to cat a file name with spaces, I needed to either:
-1. put he name within " " or
+1. put the name within " " or
 2. write it in this manner: spaces\ in\ this\ filename
 refered to https://linuxhandbook.com/filename-spaces-linux/
 ```
@@ -231,7 +231,8 @@ MNk8KNH3Usiio41PRUEoDFPqfxLPlSmx
 ```
 
 ## LEVEL 3 TO LEVEL 4
-used previous password to login to bandit3
+used previous password to login to bandit3       
+then used ls -a
 ```
 bandit3@bandit:~$ ls
 inhere
@@ -252,7 +253,7 @@ bandit4@bandit:~$ ls inhere
 learnt some options of the find command to find the only file having ASCII in it          
 here,       
 -type f indicates regular file      
--exec file {} + runs file command on every file t identify its type
+-exec file {} + runs file command on every file to identify its type
 ```
 bandit4@bandit:~$ find . -type f -exec file {} + | grep ASCII
 ./inhere/-file07: ASCII text
@@ -663,5 +664,3 @@ bandit14@bandit:~$ nc localhost 30000 < /etc/bandit_pass/bandit14
 Correct!
 8xCjnmgoKbGLhHFAZlGE5Tmu4M2tKJQo
 ```
-
-## LEVEL 15 TO LEVEL 16 
